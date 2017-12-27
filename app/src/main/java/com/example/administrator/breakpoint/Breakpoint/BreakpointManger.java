@@ -19,7 +19,7 @@ import java.util.concurrent.Executors;
  */
 
 public class BreakpointManger {
-    public static String FILE_PATH = Environment.getExternalStorageDirectory() + "/azhong";
+    public static String FILE_PATH = Environment.getExternalStorageDirectory().getPath() + "/brewkpoint";
     public static ExecutorService sExecutorService = Executors.newSingleThreadExecutor();
     static BreakpointManger mBreakpointManger;
     private Map<String, FileInfo> mFileInfoHashMap = new HashMap<>();//保存正在下载的任务信息
@@ -27,7 +27,7 @@ public class BreakpointManger {
 
     public BreakpointManger() {
         //创建文件保存路径
-        File dir = new File(BreakpointManger.FILE_PATH);
+        File dir = new File(FILE_PATH);
         if (!dir.exists()) {
             dir.mkdirs();
         }
@@ -39,19 +39,15 @@ public class BreakpointManger {
         }
         return mBreakpointManger;
     }
-
-
     public void stopDownLoadAll() {
         for (String key : mFileInfoHashMap.keySet()) {
             mFileInfoHashMap.get(key).setStop(true);
-
         }
     }
     public void addDownLoadFile(String fileName, final OnDownLoadListener onDownLoadListener) {
         FileInfo fileInfo = new FileInfo();
         fileInfo.setFileName(fileName);
-      //  fileInfo.setUrl(Constants.DOWNLOADPATH + fileName);
-        fileInfo.setUrl("http://120.76.27.3:9001/ais/resources/app/android/"+ fileName);
+        fileInfo.setUrl("http://220.162.247.139:9090/map/" + fileName);
         File file = new File(FILE_PATH, fileInfo.getFileName());
         if (file.exists()) {
             fileInfo.setFinished((int) file.length());
@@ -61,5 +57,9 @@ public class BreakpointManger {
         DownLoadTask dsownLoadTask = new DownLoadTask(fileInfo,  onDownLoadListener);
         mFileInfoHashMap.put(fileInfo.getFileName(), fileInfo);
         sExecutorService.execute(dsownLoadTask);
+    }
+
+    public void stop(String file) {
+        mFileInfoHashMap.get(file).setStop(true);
     }
 }

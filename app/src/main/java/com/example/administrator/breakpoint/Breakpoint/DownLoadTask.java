@@ -33,10 +33,15 @@ public class DownLoadTask extends Thread {
 
     @Override
     public void run() {
-        getLength();
+        //停止下载
+        if (mFileInfo.isStop()) {
+            mFileInfo.setDownLoading(false);
+            return;
+        }
 
+        getLength();
         // 一样的大小 表示下载完成
-        if (mFileInfo.getLength() == mFileInfo.getFinished()) {
+        if (mFileInfo.getLength() <= mFileInfo.getFinished()) {
             Message message = new Message();
             message.what = 2;
             mDownLoadHander.handleMessage(message);
@@ -48,7 +53,6 @@ public class DownLoadTask extends Thread {
         InputStream is = null;
         try {
             URL url = new URL(mFileInfo.getUrl());
-
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setConnectTimeout(3000);
@@ -63,7 +67,7 @@ public class DownLoadTask extends Thread {
             //从文件的某一位置开始写入
             rwd.seek(start);
             finished += mFileInfo.getFinished();
-            if (connection.getResponseCode() == 206 || connection.getResponseCode() ==200 ) {//文件部分下载，返回码为206
+            if (connection.getResponseCode() == 206) {//文件部分下载，返回码为206
                 is = connection.getInputStream();
                 byte[] buffer = new byte[1024 * 4];
                 int len;
@@ -82,18 +86,19 @@ public class DownLoadTask extends Thread {
                     //停止下载
                     if (mFileInfo.isStop()) {
                         mFileInfo.setDownLoading(false);
+                        //更新界面显示
+                        Message messages = new Message();
+                        messages.what = 4;
+                        mDownLoadHander.sendMessage(messages);
+
                         return;
                     }
                 }
-
                 //下载完成
                 mFileInfo.setDownLoading(false);
                 Message message = new Message();
-
                 message.what = 002;
-
                 mDownLoadHander.sendMessage(message);
-
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -178,6 +183,9 @@ public class DownLoadTask extends Thread {
                     break;
                 case 003:
                     mOnDownLoadListener.updateStatus(3);
+                    break;
+                case 4:
+                    mOnDownLoadListener.updateStatus(4);
                     break;
             }
 
