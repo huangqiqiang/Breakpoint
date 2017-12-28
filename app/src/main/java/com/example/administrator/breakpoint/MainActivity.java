@@ -34,6 +34,10 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println(progress);
                 mProgressBar.setProgress(progress);
                 mProgressBar.setMax(max);
+
+
+                        mTextView.setText(String.valueOf(progress/max));
+
             }
 
             @Override
@@ -72,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         mButton1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                BreakpointManger.getInstance().addDownLoadFile("base.db ", downloadListener);
+                BreakpointManger.getInstance().addDownLoadFile("base.db", downloadListener);
             }
         });
         mButton2.setOnClickListener(new View.OnClickListener() {
@@ -84,18 +88,12 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button3).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                BreakpointManger.getInstance().stop("/base.db");
                 File file = new File(BreakpointManger.FILE_PATH + "/base.db");
-                File filess = new File(BreakpointManger.FILE_PATH + "/base11.db");
-                try {
-                    filess.createNewFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
                 if (file.exists()) {
                     file.delete();
                 }
-                BreakpointManger.getInstance().addDownLoadFile("base.db ", downloadListener);
+                BreakpointManger.getInstance().addDownLoadFile("base.db", downloadListener);
             }
         });
 
