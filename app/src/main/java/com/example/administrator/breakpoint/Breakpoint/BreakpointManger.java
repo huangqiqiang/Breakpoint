@@ -20,6 +20,7 @@ import java.util.concurrent.Executors;
 
 public class BreakpointManger {
     public static String FILE_PATH = Environment.getExternalStorageDirectory().getPath() + "/brewkpoint";
+    public static final String KEY_FILE_NAME = "base.db";
     public static ExecutorService sExecutorService = Executors.newSingleThreadExecutor();
     static BreakpointManger mBreakpointManger;
     private Map<String, FileInfo> mFileInfoHashMap = new HashMap<>();//保存正在下载的任务信息
@@ -39,11 +40,13 @@ public class BreakpointManger {
         }
         return mBreakpointManger;
     }
+
     public void stopDownLoadAll() {
         for (String key : mFileInfoHashMap.keySet()) {
             mFileInfoHashMap.get(key).setStop(true);
         }
     }
+
     public void addDownLoadFile(String fileName, final OnDownLoadListener onDownLoadListener) {
         FileInfo fileInfo = new FileInfo();
         fileInfo.setFileName(fileName);
@@ -54,12 +57,15 @@ public class BreakpointManger {
         } else {
             fileInfo.setFinished(0);
         }
-        DownLoadTask dsownLoadTask = new DownLoadTask(fileInfo,  onDownLoadListener);
+        DownLoadTask dsownLoadTask = new DownLoadTask(fileInfo, onDownLoadListener);
         mFileInfoHashMap.put(fileInfo.getFileName(), fileInfo);
         sExecutorService.execute(dsownLoadTask);
     }
 
     public void stop(String file) {
-        mFileInfoHashMap.get(file).setStop(true);
+        FileInfo fileInfo = mFileInfoHashMap.get(file);
+        if (fileInfo != null) {
+            fileInfo.setStop(true);
+        }
     }
 }

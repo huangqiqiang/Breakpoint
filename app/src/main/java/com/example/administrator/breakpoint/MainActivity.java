@@ -13,6 +13,7 @@ import com.example.administrator.breakpoint.Breakpoint.OnDownLoadListener;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 
 public class MainActivity extends AppCompatActivity {
     ProgressBar mProgressBar;
@@ -34,9 +35,7 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println(progress);
                 mProgressBar.setProgress(progress);
                 mProgressBar.setMax(max);
-
-
-                        mTextView.setText(String.valueOf(progress/max));
+                mTextView.setText(new BigDecimal((progress / Double.valueOf(max)) * 100).setScale(2, BigDecimal.ROUND_DOWN).toString());
 
             }
 
@@ -76,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         mButton1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                BreakpointManger.getInstance().addDownLoadFile("base.db", downloadListener);
+                BreakpointManger.getInstance().addDownLoadFile(BreakpointManger.KEY_FILE_NAME, downloadListener);
             }
         });
         mButton2.setOnClickListener(new View.OnClickListener() {
@@ -88,12 +87,12 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button3).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BreakpointManger.getInstance().stop("/base.db");
-                File file = new File(BreakpointManger.FILE_PATH + "/base.db");
+                BreakpointManger.getInstance().stop(BreakpointManger.KEY_FILE_NAME);
+                File file = new File(BreakpointManger.FILE_PATH, BreakpointManger.KEY_FILE_NAME);
                 if (file.exists()) {
                     file.delete();
                 }
-                BreakpointManger.getInstance().addDownLoadFile("base.db", downloadListener);
+                BreakpointManger.getInstance().addDownLoadFile(BreakpointManger.KEY_FILE_NAME, downloadListener);
             }
         });
 
